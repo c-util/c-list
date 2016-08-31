@@ -1,0 +1,18 @@
+c-list - Circular Double Linked List Implementation in Standard ISO-C11
+
+DETAILS:
+        https://github.com/c-util/c-list
+
+BUG REPORTS:
+        https://github.com/c-util/c-list/issues
+
+GIT:
+        git@github.com:c-util/c-list.git
+        https://github.com/c-util/c-list.git
+
+GITWEB:
+        https://github.com/c-util/c-list
+
+LICENSE:
+        LGPLv2.1+ (LICENSE.LGPL2.1)
+        See COPYING for details.

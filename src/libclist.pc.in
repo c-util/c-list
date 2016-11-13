@@ -1,4 +1,4 @@
-Name: c-list
+Name: libclist
 Description: Circular Double Linked List Implementation
 Version: @VERSION@
 Cflags: -I@includedir@

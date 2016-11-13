@@ -4,6 +4,7 @@
 *.log
 *.m4
 *.o
+*.pc
 *.stamp
 *.swp
 *.tar.xz
@@ -19,8 +20,6 @@
 .dirstamp
 /Makefile
 /Makefile.in
-/install-tree
-
-/src/c-list.pc
+/.travis.yml
 
 /test-api

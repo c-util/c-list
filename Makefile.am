@@ -3,11 +3,13 @@
 
 SHELL = bash
 ACLOCAL_AMFLAGS = -I build/m4 ${ACLOCAL_FLAGS}
-AM_MAKEFLAGS = --no-print-directory
 AUTOMAKE_OPTIONS = color-tests parallel-tests
-
-GCC_COLORS ?= 'ooh, shiny!'
-export GCC_COLORS
+AM_MAKEFLAGS = --no-print-directory
+AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(abs_builddir)
+check_PROGRAMS = $(default_tests)
+TESTS = $(default_tests)
+CLEANFILES =
+EXTRA_DIST =
 
 # remove targets if the command fails
 .DELETE_ON_ERROR:
@@ -18,32 +20,53 @@ export GCC_COLORS
 # keep the test-suite.log and Makefile around at all times
 .PRECIOUS: $(TEST_SUITE_LOG) Makefile
 
-pkgconfiglibdir=$(libdir)/pkgconfig
-
-BUILT_SOURCES =
-CLEANFILES = $(BUILT_SOURCES)
-EXTRA_DIST =
-include_HEADERS =
-pkgconfiglib_DATA =
-noinst_LIBRARIES =
-check_PROGRAMS =
-default_tests =
-TESTS =
-
 AM_CPPFLAGS = \
 	-include $(top_builddir)/build/config.h \
 	-I $(top_srcdir)/src \
-	-I $(top_builddir)/src \
-	$(OUR_CPPFLAGS)
+	-I $(top_builddir)/src
 
-AM_CFLAGS = $(OUR_CFLAGS)
-AM_LDFLAGS = $(OUR_LDFLAGS)
+AM_CFLAGS = \
+	-fdata-sections \
+	-ffunction-sections \
+	-fvisibility=hidden \
+	-fno-common \
+	-fPIC \
+	-g \
+	-O2 \
+	-Wall \
+	-Wundef \
+	-Wextra \
+	-Wshadow \
+	-Winit-self \
+	-Wformat=2 \
+	-Wformat-security \
+	-Wformat-nonliteral \
+	-Wmissing-prototypes \
+	-Wmissing-declarations \
+	-Wdeclaration-after-statement \
+	-Wredundant-decls \
+	-Wno-missing-field-initializers \
+	-Wno-unused-parameter \
+	-Wno-inline
+
+AM_LDFLAGS = \
+	-Wl,--as-needed \
+	-Wl,--no-undefined \
+	-Wl,--gc-sections \
+	-Wl,-z,relro \
+	-Wl,-z,now \
+	-pie
 
 # ------------------------------------------------------------------------------
-# shared library
+# test-api
 
-include_HEADERS += \
-	src/c-list.h
+test_api_SOURCES = src/test-api.c
+
+# ------------------------------------------------------------------------------
+# targets
+
+include_HEADERS = src/c-list.h
+default_tests = test-api
 
 %.pc: %.pc.in
 	$(AM_V_GEN)$(SED) \
@@ -52,36 +75,7 @@ include_HEADERS += \
 		-e 's,@VERSION\@,$(VERSION),g' \
 		$< > $@
 
-pkgconfiglib_DATA += \
-	src/c-list.pc
-
-EXTRA_DIST += \
-	src/c-list.pc.in
-
-CLEANFILES += \
-	src/c-list.pc
-
-# ------------------------------------------------------------------------------
-# test-api
-
-default_tests += \
-	test-api
-
-test_api_SOURCES = \
-	src/test-api.c
-
-# ------------------------------------------------------------------------------
-# test suite
-
-AM_TESTS_ENVIRONMENT = LD_LIBRARY_PATH=$(abs_builddir)
-check_PROGRAMS += $(default_tests)
-TESTS += $(default_tests)
-
-# ------------------------------------------------------------------------------¶
-# check "make install" directory tree
-
-install-tree: all
-	rm -rf $(abs_builddir)/install-tree
-	$(MAKE) install DESTDIR=$(abs_builddir)/install-tree
-	tree $(abs_builddir)/install-tree
-.PHONY: install-tree
+pkgconfiglibdir=$(libdir)/pkgconfig
+pkgconfiglib_DATA = src/libclist.pc
+EXTRA_DIST += src/libclist.pc.in
+CLEANFILES += src/libclist.pc

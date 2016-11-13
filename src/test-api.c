@@ -4,12 +4,10 @@
  * shared library. Its sole purpose is to test for symbol availability.
  */
 
-#undef NDEBUG
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "c-list.h"
 
 typedef struct {

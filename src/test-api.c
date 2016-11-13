@@ -21,6 +21,7 @@ static void test_api(void) {
         CList *list_iter, *list_safe, list = C_LIST_INIT(list);
         Node *node_iter, *node_safe, node = { .id = 0, .link = C_LIST_INIT(node.link) };
 
+        assert(!c_list_entry(NULL, Node, link));
         assert(c_list_entry(&node.link, Node, link) == &node);
         assert(!c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));

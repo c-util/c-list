@@ -1,0 +1,13 @@
+c-list - Circular Double Linked List Implementation in Standard ISO-C11
+
+CHANGES WITH 1:
+
+        * Initial release of c-list.
+
+        * This project provides an implementation of a circular double linked
+          list in standard ISO-C11. License is ASL-2.0 and the build system
+          used is `Meson'.
+
+        Contributions from: David Herrmann, Tom Gundersen
+
+        - Berlin, 2017-03-03

@@ -267,7 +267,7 @@ static inline CList *c_list_loop_prev(CList *what) {
              _iter = c_list_entry(c_list_loop_next(&_iter->_m), __typeof__(*_iter), _m))
 
 /**
- * c_list_for_each_entry(_safe) - loop over all list entries, safe for removal
+ * c_list_for_each_entry_safe() - loop over all list entries, safe for removal
  * @_iter:              iterator to use
  * @_safe:              used to store pointer to next element
  * @_list:              list to loop over

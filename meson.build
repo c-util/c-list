@@ -1,4 +1,4 @@
-project('c-rbtree',
+project('c-list',
         'c',
         version: '1',
         license: 'Apache',

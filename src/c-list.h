@@ -124,7 +124,7 @@ static inline void c_list_link_before(CList *where, CList *what) {
  * into another list, or the other list will be corrupted.
  */
 static inline void c_list_link_after(CList *where, CList *what) {
-        CList *prev = where->prev, *next = where;
+        CList *prev = where, *next = where->next;
 
         next->prev = what;
         what->next = next;

@@ -166,6 +166,34 @@ static inline void c_list_unlink_init(CList *what) {
 }
 
 /**
+ * c_list_swap() - exchange the contents of two lists
+ * @list1:      the list to operate on
+ * @list2:      the list to operate on
+ *
+ * This replaces the contents of the list @list1 with the contents
+ * of @list2, and vice versa.
+ */
+static inline void c_list_swap(CList *list1, CList *list2) {
+        CList *list;
+
+        list = list1->next;
+        list1->prev->next = list2;
+        list->prev = list2;
+
+        list = list2->next;
+        list2->prev->next = list1;
+        list->prev = list1;
+
+        list = list2->next;
+        list2->next = list1->next;
+        list1->next = list;
+
+        list = list2->prev;
+        list2->prev = list1->prev;
+        list1->prev = list;
+}
+
+/**
  * c_list_loop_first() - return first list element, or head if empty
  * @list:               list to operate on
  *

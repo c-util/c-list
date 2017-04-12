@@ -85,8 +85,29 @@ static void test_swap(void) {
         assert(list1.prev == list1.next && list1.prev == &list1);
 }
 
+static void test_splice(void) {
+        CList target = (CList)C_LIST_INIT(target);
+        CList source = (CList)C_LIST_INIT(source);
+        CList e1, e2;
+
+        c_list_link_tail(&source, &e1);
+
+        c_list_splice(&target, &source);
+        assert(c_list_first(&target) == &e1);
+        assert(c_list_last(&target) == &e1);
+
+        source = (CList)C_LIST_INIT(source);
+
+        c_list_link_tail(&source, &e2);
+
+        c_list_splice(&target, &source);
+        assert(c_list_first(&target) == &e1);
+        assert(c_list_last(&target) == &e2);
+}
+
 int main(int argc, char **argv) {
         test_iterators();
         test_swap();
+        test_splice();
         return 0;
 }

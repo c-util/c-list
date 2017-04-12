@@ -191,6 +191,28 @@ static inline void c_list_swap(CList *list1, CList *list2) {
 }
 
 /**
+ * c_list_splice() - splice one list into another
+ * @target:     the list to splice into
+ * @source:     the list to splice
+ *
+ * This removes all the entries from @source and splice them into @target.
+ * The order of the two lists is preserved and the source is appended
+ * to the end of target.
+ */
+static inline void c_list_splice(CList *target, CList *source) {
+        if (c_list_is_empty(source))
+                return;
+
+        /* attach the front of @source to the tail of @target */
+        source->next->prev = target->prev;
+        target->prev->next = source->next;
+
+        /* attach the tail of @source to the front of @target */
+        source->prev->next = target;
+        target->prev = source->prev;
+}
+
+/**
  * c_list_loop_first() - return first list element, or head if empty
  * @list:               list to operate on
  *

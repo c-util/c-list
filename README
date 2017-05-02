@@ -14,5 +14,6 @@ GITWEB:
         https://github.com/c-util/c-list
 
 LICENSE:
-        Apache Software License 2.0 (LICENSE-APACHE)
-        See COPYING for details.
+        Dual-licensed under (see COPYING for details):
+          - Apache Software License 2.0 (LICENSE-APACHE)
+          - Lesser General Public License 2.0+ (LICENSE-LGPL)

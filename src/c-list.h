@@ -62,8 +62,8 @@ struct CList {
  * Return: Pointer to parent container, or NULL.
  */
 #define c_list_entry(_what, _t, _m) \
-        ((_t *)(((void *)(_what) ?: \
-                 (void *)NULL + offsetof(_t, _m)) - offsetof(_t, _m)))
+        ((_t *)(void *)(((unsigned long)(void *)(_what) ?: \
+                         offsetof(_t, _m)) - offsetof(_t, _m)))
 
 /**
  * c_list_is_linked() - check whether a entry is linked

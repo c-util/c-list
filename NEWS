@@ -1,5 +1,25 @@
 c-list - Circular Double Linked List Implementation in Standard ISO-C11
 
+CHANGES WITH 2:
+
+        * Adjust project-name in build-system to reflect the actual project. The
+          previous releases incorrectly claimed to be c-rbtree in the build
+          system.
+
+        * Add c_list_swap() that swaps two lists given their head pointers.
+
+        * Add c_list_splice() that moves a list.
+
+        * Add LGPL2.1+ as license so c-list can be imported into GPL2 projects.
+          It is now officially dual-licensed.
+
+        * As usual a bunch of fixes, additional tests, and documentation
+          updates.
+
+        Contributions from: David Herrmann, Tom Gundersen
+
+        - Lund, 2017-05-03
+
 CHANGES WITH 1:
 
         * Initial release of c-list.

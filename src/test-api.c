@@ -56,6 +56,14 @@ static void test_api(void) {
         c_list_unlink_init(&node.link);
         assert(!c_list_is_linked(&node.link));
 
+        /* swap / splice list operators */
+
+        c_list_swap(&list, &list);
+        assert(c_list_is_empty(&list));
+
+        c_list_splice(&list, &list);
+        assert(c_list_is_empty(&list));
+
         /* loop helpers */
 
         assert(c_list_loop_first(&list) == list.next);

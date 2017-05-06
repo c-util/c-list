@@ -48,6 +48,14 @@ struct CList {
 #define C_LIST_INIT(_var) { .next = &(_var), .prev = &(_var) }
 
 /**
+ * c_list_init() - initialize list entry
+ * @what:               list entry to initialize
+ */
+static inline void c_list_init(CList *what) {
+        *what = (CList)C_LIST_INIT(*what);
+}
+
+/**
  * c_list_entry() - get parent container of list entry
  * @_what:              list entry, or NULL
  * @_t:                 type of parent container

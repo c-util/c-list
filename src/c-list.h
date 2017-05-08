@@ -79,7 +79,7 @@ static inline void c_list_init(CList *what) {
  *
  * Return: True if @what is linked in a list, false if not.
  */
-static inline _Bool c_list_is_linked(CList *what) {
+static inline _Bool c_list_is_linked(const CList *what) {
         return what && what->next != what;
 }
 
@@ -89,7 +89,7 @@ static inline _Bool c_list_is_linked(CList *what) {
  *
  * Return: True if @list is empty, false if not.
  */
-static inline _Bool c_list_is_empty(CList *list) {
+static inline _Bool c_list_is_empty(const CList *list) {
         return !list || !c_list_is_linked(list);
 }
 

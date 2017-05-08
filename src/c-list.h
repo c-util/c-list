@@ -390,6 +390,47 @@ static inline CList *c_list_last(CList *list) {
 #define c_list_last_entry(_list, _t, _m) \
         c_list_entry(c_list_last(_list), _t, _m)
 
+/**
+ * c_list_length() - return the number of linked entries, excluding the head
+ * @list:               list to operate on
+ *
+ * Returns the number of entires in the list, excluding the list head
+ * @list. That is, for a list that is empty according to c_list_is_empty(),
+ * the returned length is 0. This requires to iterate the list and has
+ * thus O(n) runtime.
+ *
+ * Return: the number of items in the list
+ */
+static inline size_t c_list_length(const CList *list) {
+        CList *iter;
+        size_t n = 0;
+
+        c_list_for_each(iter, (CList *)list)
+                n++;
+        return n;
+}
+
+/**
+ * c_list_contains() - whether an item is linked in a certain list
+ * @list:               list to operate on
+ * @what:               the list entry to find
+ *
+ * Searches @list whether @what is a linked entry of the list
+ * in O(n). For the head @list, this also returns True.
+ *
+ * Return: True if @what is in @list
+ */
+static inline _Bool c_list_contains(const CList *list, const CList *what) {
+        const CList *iter = list;
+
+        do {
+                if (iter == what)
+                        return 1;
+                iter = iter->next;
+        } while (iter != list);
+        return 0;
+}
+
 #ifdef __cplusplus
 }
 #endif

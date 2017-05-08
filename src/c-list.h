@@ -23,6 +23,9 @@ extern "C" {
 
 #include <stddef.h>
 
+#ifndef _C_LIST_DEFINED
+#define _C_LIST_DEFINED
+
 typedef struct CList CList;
 
 /**
@@ -44,6 +47,8 @@ struct CList {
         CList *next;
         CList *prev;
 };
+
+#endif
 
 #define C_LIST_INIT(_var) { .next = &(_var), .prev = &(_var) }
 

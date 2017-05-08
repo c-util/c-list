@@ -4,7 +4,7 @@
 #  future, if we add more complex list helpers.)
 #
 
-install_headers('c-list.h')
+install_headers(['c-list.h', 'c-list-fwd.h'])
 
 libclist_dep = declare_dependency(
         include_directories: include_directories('.'),

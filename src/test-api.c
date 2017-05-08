@@ -23,16 +23,23 @@ static void test_api(void) {
         assert(c_list_entry(&node.link, Node, link) == &node);
         assert(!c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));
+        assert(c_list_length(&list) == 0);
+        assert(c_list_contains(&list, &list));
+        assert(!c_list_contains(&list, &node.link));
 
         /* basic link / unlink calls */
 
         c_list_link_before(&list, &node.link);
         assert(c_list_is_linked(&node.link));
         assert(!c_list_is_empty(&list));
+        assert(c_list_length(&list) == 1);
+        assert(c_list_contains(&list, &list));
+        assert(c_list_contains(&list, &node.link));
 
         c_list_unlink(&node.link);
         assert(c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));
+        assert(c_list_length(&list) == 0);
 
         c_list_link_after(&list, &node.link);
         assert(c_list_is_linked(&node.link));

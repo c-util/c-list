@@ -4,19 +4,21 @@
 #  future, if we add more complex list helpers.)
 #
 
-install_headers('c-list.h')
-
 libclist_dep = declare_dependency(
         include_directories: include_directories('.'),
-        version: meson.project_version()
+        version: meson.project_version(),
 )
 
-mod_pkgconfig.generate(
-        version: meson.project_version(),
-        name: 'libclist',
-        filebase: 'libclist',
-        description: 'Circular Double Linked List Implementation'
-)
+if not meson.is_subproject()
+        install_headers('c-list.h')
+
+        mod_pkgconfig.generate(
+                version: meson.project_version(),
+                name: 'libclist',
+                filebase: 'libclist',
+                description: 'Circular Double Linked List Implementation',
+        )
+endif
 
 #
 # target: test-*

@@ -4,7 +4,7 @@ project(
         version: '2',
         license: 'Apache',
         default_options: [
-                'c_std=c11'
+                'c_std=c11',
         ],
 )
 

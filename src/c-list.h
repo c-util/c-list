@@ -421,14 +421,13 @@ static inline size_t c_list_length(const CList *list) {
  * Return: True if @what is in @list
  */
 static inline _Bool c_list_contains(const CList *list, const CList *what) {
-        const CList *iter = list;
+        CList *iter;
 
-        do {
-                if (iter == what)
+        c_list_for_each(iter, (CList *)list)
+                if (what == iter)
                         return 1;
-                iter = iter->next;
-        } while (iter != list);
-        return 0;
+
+        return what == list;
 }
 
 #ifdef __cplusplus

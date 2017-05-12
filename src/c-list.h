@@ -74,7 +74,7 @@ static inline void c_list_init(CList *what) {
                          offsetof(_t, _m)) - offsetof(_t, _m)))
 
 /**
- * c_list_is_linked() - check whether a entry is linked
+ * c_list_is_linked() - check whether an entry is linked
  * @what:               entry to check, or NULL
  *
  * Return: True if @what is linked in a list, false if not.
@@ -391,34 +391,45 @@ static inline CList *c_list_last(CList *list) {
         c_list_entry(c_list_last(_list), _t, _m)
 
 /**
- * c_list_length() - return the number of linked entries, excluding the head
+ * c_list_length() - return number of linked entries, excluding the head
  * @list:               list to operate on
  *
- * Returns the number of entires in the list, excluding the list head
- * @list. That is, for a list that is empty according to c_list_is_empty(),
- * the returned length is 0. This requires to iterate the list and has
- * thus O(n) runtime.
+ * Returns the number of entries in the list, excluding the list head @list.
+ * That is, for a list that is empty according to c_list_is_empty(), the
+ * returned length is 0. This requires to iterate the list and has thus O(n)
+ * runtime.
  *
- * Return: the number of items in the list
+ * Note that this function is meant for debugging purposes only. If you need
+ * the list size during normal operation, you should maintain a counter
+ * separately.
+ *
+ * Return: Number of items in @list.
  */
-static inline size_t c_list_length(const CList *list) {
+static inline unsigned long c_list_length(const CList *list) {
+        unsigned long n = 0;
         CList *iter;
-        size_t n = 0;
 
         c_list_for_each(iter, (CList *)list)
-                n++;
+                ++n;
+
         return n;
 }
 
 /**
- * c_list_contains() - whether an item is linked in a certain list
+ * c_list_contains() - check whether an entry is linked in a certain list
  * @list:               list to operate on
- * @what:               the list entry to find
+ * @what:               entry to look for
  *
- * Searches @list whether @what is a linked entry of the list
- * in O(n). For the head @list, this also returns True.
+ * This checks whether @what is linked into @list. This requires a linear
+ * search through the list, as such runs in O(n). Note that the list-head is
+ * considered part of the list, and hence this returns true if @what equals
+ * @list.
  *
- * Return: True if @what is in @list
+ * Note that this function is meant for debugging purposes, and consistency
+ * checks. You should always be aware whether your objects are linked in a
+ * specific list.
+ *
+ * Return: True if @what is in @list, false otherwise.
  */
 static inline _Bool c_list_contains(const CList *list, const CList *what) {
         CList *iter;

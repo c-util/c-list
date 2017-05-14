@@ -229,9 +229,14 @@ static inline void c_list_splice(CList *target, CList *source) {
  *
  * Return: Pointer to first list element, or pointer to head if empty.
  */
-static inline CList *c_list_loop_first(CList *list) {
+static inline CList *c_list_loop_first(const CList *list) {
         return list->next;
 }
+#define c_list_loop_first(_list) ( \
+        _Generic((_list), \
+                const CList *: ((const CList *)c_list_loop_first((_list))), \
+                default:                       c_list_loop_first((_list)) \
+        ))
 
 /**
  * c_list_loop_last() - return last list element, or head if empty
@@ -242,9 +247,14 @@ static inline CList *c_list_loop_first(CList *list) {
  *
  * Return: Pointer to last list element, or pointer to head if empty.
  */
-static inline CList *c_list_loop_last(CList *list) {
+static inline CList *c_list_loop_last(const CList *list) {
         return list->prev;
 }
+#define c_list_loop_last(_list) ( \
+        _Generic((_list), \
+                const CList *: ((const CList *)c_list_loop_last((_list))), \
+                default:                       c_list_loop_last((_list)) \
+        ))
 
 /**
  * c_list_loop_next() - return next list element, or head if none
@@ -255,9 +265,14 @@ static inline CList *c_list_loop_last(CList *list) {
  *
  * Return: Pointer to next list element, or pointer to head if none.
  */
-static inline CList *c_list_loop_next(CList *what) {
+static inline CList *c_list_loop_next(const CList *what) {
         return what->next;
 }
+#define c_list_loop_next(_list) ( \
+        _Generic((_list), \
+                const CList *: ((const CList *)c_list_loop_next((_list))), \
+                default:                       c_list_loop_next((_list)) \
+        ))
 
 /**
  * c_list_loop_prev() - return previous list element, or head if none
@@ -269,9 +284,14 @@ static inline CList *c_list_loop_next(CList *what) {
  *
  * Return: Pointer to previous list element, or pointer to head if none.
  */
-static inline CList *c_list_loop_prev(CList *what) {
+static inline CList *c_list_loop_prev(const CList *what) {
         return what->prev;
 }
+#define c_list_loop_prev(_list) ( \
+        _Generic((_list), \
+                const CList *: ((const CList *)c_list_loop_prev((_list))), \
+                default:                       c_list_loop_prev((_list)) \
+        ))
 
 /**
  * c_list_for_each() - loop over all list entries
@@ -407,9 +427,9 @@ static inline CList *c_list_last(CList *list) {
  */
 static inline unsigned long c_list_length(const CList *list) {
         unsigned long n = 0;
-        CList *iter;
+        const CList *iter;
 
-        c_list_for_each(iter, (CList *)list)
+        c_list_for_each(iter, list)
                 ++n;
 
         return n;
@@ -432,9 +452,9 @@ static inline unsigned long c_list_length(const CList *list) {
  * Return: True if @what is in @list, false otherwise.
  */
 static inline _Bool c_list_contains(const CList *list, const CList *what) {
-        CList *iter;
+        const CList *iter;
 
-        c_list_for_each(iter, (CList *)list)
+        c_list_for_each(iter, list)
                 if (what == iter)
                         return 1;
 

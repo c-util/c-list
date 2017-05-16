@@ -1,5 +1,34 @@
 c-list - Circular Double Linked List Implementation in Standard ISO-C11
 
+CHANGES WITH 3:
+
+        * API break: The c_list_loop_*() symbols were removed, since we saw
+                     little use for them. No user was known at the time, so
+                     all projects should build with the new API version
+                     unchanged.
+                     Since c-list does not distribute any compiled code, there
+                     is no ABI issue with this change.
+
+        * Two new symbols c_list_length() and c_list_contains(). They are meant
+          for debugging purposes, to easily verify list integrity. Since they
+          run in O(n) time, they are not recommended for any other use than
+          debugging.
+
+        * New symbol c_list_init() is provided as alternative to the verbose
+          C_LIST_INIT assignment.
+
+        * The c-list API is extended to work well with `const CList` objects.
+          That is, any read-only accessor function allows constant objects as
+          input now.
+          Note that this does not propagate into other members linked in the
+          list. Using `const` for CList members is of little practical use.
+          However, it might be of use for its embedding objects, so we now
+          allow it in the CList API as well.
+
+        Contributions from:
+
+        - Tübingen, 2017-XX-XX
+
 CHANGES WITH 2:
 
         * Adjust project-name in build-system to reflect the actual project. The

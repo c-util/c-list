@@ -71,13 +71,6 @@ static void test_api(void) {
         c_list_splice(&list, &list);
         assert(c_list_is_empty(&list));
 
-        /* loop helpers */
-
-        assert(c_list_loop_first(&list) == list.next);
-        assert(c_list_loop_last(&list) == list.prev);
-        assert(c_list_loop_next(&list) == list.next);
-        assert(c_list_loop_prev(&list) == list.prev);
-
         /* loop macros */
 
         c_list_for_each(list_iter, &list)

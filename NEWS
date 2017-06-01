@@ -25,6 +25,10 @@ CHANGES WITH 3:
           However, it might be of use for its embedding objects, so we now
           allow it in the CList API as well.
 
+        * The c_list_splice() call now clears the source list, rather than
+          returning with stale pointers. Technically, this is also an API
+          break, but unlikely to affect any existing code.
+
         Contributions from:
 
         - Tübingen, 2017-XX-XX

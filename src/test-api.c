@@ -19,7 +19,9 @@ static void test_api(void) {
         CList *list_iter, *list_safe, list = C_LIST_INIT(list);
         Node *node_iter, *node_safe, node = { .id = 0, .link = C_LIST_INIT(node.link) };
 
-        assert(!c_list_entry(NULL, Node, link));
+        list_iter = NULL;
+        assert(!c_list_entry(list_iter, Node, link));
+        assert(!c_list_entry((CList *)NULL, Node, link));
         assert(c_list_entry(&node.link, Node, link) == &node);
         assert(!c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));
@@ -70,6 +72,11 @@ static void test_api(void) {
 
         c_list_splice(&list, &list);
         assert(c_list_is_empty(&list));
+
+        /* list accessors */
+
+        assert(c_list_next(&list) == list.next);
+        assert(c_list_prev(&list) == list.prev);
 
         /* loop macros */
 

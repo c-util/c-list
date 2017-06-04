@@ -41,9 +41,25 @@ typedef struct CList CList;
  * initialize the entry via C_LIST_INIT as well.
  */
 struct CList {
-        CList *next;
-        CList *prev;
+        const CList *next;
+        const CList *prev;
 };
+
+static inline const CList *c_list_next(const CList *clist) {
+	return clist ? clist->next : NULL;
+}
+#define c_list_next(clist) \
+        (_Generic((clist), \
+                  CList *: ((CList *)c_list_next((clist))), \
+                  default:           c_list_next((clist))))
+
+static inline const CList *c_list_prev(const CList *clist) {
+	return clist ? clist->prev : NULL;
+}
+#define c_list_prev(clist) \
+        (_Generic((clist), \
+                  CList *: ((CList *)c_list_prev((clist))), \
+                  default:           c_list_prev((clist))))
 
 #define C_LIST_INIT(_var) { .next = &(_var), .prev = &(_var) }
 
@@ -70,6 +86,11 @@ static inline void c_list_init(CList *what) {
  * Return: Pointer to parent container, or NULL.
  */
 #define c_list_entry(_what, _t, _m) \
+        (_Generic((_what), \
+                  const CList *: ((const _t *)c_list_entry_cast ((_what), _t, _m)), \
+                  CList *      :              c_list_entry_cast ((_what), _t, _m)))
+
+#define c_list_entry_cast(_what, _t, _m) \
         ((_t *)(void *)(((unsigned long)(void *)(_what) ?: \
                          offsetof(_t, _m)) - offsetof(_t, _m)))
 
@@ -90,7 +111,7 @@ static inline _Bool c_list_is_linked(const CList *what) {
  * Return: True if @list is empty, false if not.
  */
 static inline _Bool c_list_is_empty(const CList *list) {
-        return !list || !c_list_is_linked(list);
+        return !list || list->next == list;
 }
 
 /**
@@ -108,7 +129,8 @@ static inline _Bool c_list_is_empty(const CList *list) {
  * into another list, or the other list will be corrupted.
  */
 static inline void c_list_link_before(CList *where, CList *what) {
-        CList *prev = where->prev, *next = where;
+        CList *prev = c_list_prev(where);
+        CList *next = where;
 
         next->prev = what;
         what->next = next;
@@ -132,7 +154,8 @@ static inline void c_list_link_before(CList *where, CList *what) {
  * into another list, or the other list will be corrupted.
  */
 static inline void c_list_link_after(CList *where, CList *what) {
-        CList *prev = where, *next = where->next;
+        CList *prev = where;
+        CList *next = c_list_next(where);
 
         next->prev = what;
         what->next = next;
@@ -153,7 +176,8 @@ static inline void c_list_link_after(CList *where, CList *what) {
  * @what is re-initialized after removal, use c_list_unlink_init().
  */
 static inline void c_list_unlink(CList *what) {
-        CList *prev = what->prev, *next = what->next;
+        CList *prev = c_list_prev(what);
+        CList *next = c_list_next(what);
 
         next->prev = prev;
         prev->next = next;
@@ -186,11 +210,11 @@ static inline void c_list_swap(CList *list1, CList *list2) {
 
         /* make neighbors of list1 point to list2, and vice versa */
         t = *list1;
-        t.next->prev = list2;
-        t.prev->next = list2;
+        c_list_next(&t)->prev = list2;
+        c_list_prev(&t)->next = list2;
         t = *list2;
-        t.next->prev = list1;
-        t.prev->next = list1;
+        c_list_next(&t)->prev = list1;
+        c_list_prev(&t)->next = list1;
 
         /* swap list1 and list2 now that their neighbors were fixed up */
         t = *list1;
@@ -212,11 +236,11 @@ static inline void c_list_swap(CList *list1, CList *list2) {
 static inline void c_list_splice(CList *target, CList *source) {
         if (!c_list_is_empty(source)) {
                 /* attach the front of @source to the tail of @target */
-                source->next->prev = target->prev;
-                target->prev->next = source->next;
+                c_list_next(source)->prev = target->prev;
+                c_list_prev(target)->next = source->next;
 
                 /* attach the tail of @source to the front of @target */
-                source->prev->next = target;
+                c_list_prev(source)->next = target;
                 target->prev = source->prev;
 
                 /* clear source */
@@ -232,10 +256,10 @@ static inline void c_list_splice(CList *target, CList *source) {
  * This is a macro to use as for-loop to iterate an entire list. It is meant as
  * convenience macro. Feel free to code your own loop iterator.
  */
-#define c_list_for_each(_iter, _list)                                           \
-        for (_iter = (_list)->next;                                             \
-             (_iter) != (_list);                                                \
-             _iter = (_iter)->next)
+#define c_list_for_each(_iter, _list) \
+        for (_iter = c_list_next(_list); \
+             _iter != (_list); \
+             _iter = c_list_next(_iter))
 
 
 /**
@@ -253,10 +277,10 @@ static inline void c_list_splice(CList *target, CList *source) {
  * havoc if you remove other list entries. You better not modify anything but
  * the current list entry.
  */
-#define c_list_for_each_safe(_iter, _safe, _list)                               \
-        for (_iter = (_list)->next, _safe = (_iter)->next;                      \
-             (_iter) != (_list);                                                \
-             _iter = (_safe), _safe = (_safe)->next)
+#define c_list_for_each_safe(_iter, _safe, _list) \
+        for (_iter = c_list_next(_list), _safe = c_list_next(_iter); \
+             _iter != (_list); \
+             _iter = _safe, _safe = c_list_next(_safe))
 
 /**
  * c_list_for_each_entry() - loop over all list entries
@@ -267,10 +291,10 @@ static inline void c_list_splice(CList *target, CList *source) {
  * This combines c_list_for_each() with c_list_entry(), making it easy to
  * iterate over a list of a specific type.
  */
-#define c_list_for_each_entry(_iter, _list, _m)                                 \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m);       \
-             &(_iter)->_m != (_list);                                           \
-             _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
+#define c_list_for_each_entry(_iter, _list, _m) \
+        for (_iter = c_list_entry(c_list_next(_list), __typeof__(*_iter), _m); \
+             &_iter->_m != (_list); \
+             _iter = c_list_entry(c_list_next(&_iter->_m), __typeof__(*_iter), _m))
 
 /**
  * c_list_for_each_entry_safe() - loop over all list entries, safe for removal
@@ -282,12 +306,12 @@ static inline void c_list_splice(CList *target, CList *source) {
  * This combines c_list_for_each_safe() with c_list_entry(), making it easy to
  * iterate over a list of a specific type.
  */
-#define c_list_for_each_entry_safe(_iter, _safe, _list, _m)                     \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m),       \
-             _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
-             &(_iter)->_m != (_list);                                           \
-             _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))    \
+#define c_list_for_each_entry_safe(_iter, _safe, _list, _m) \
+        for (_iter = c_list_entry(c_list_next(_list), __typeof__(*_iter), _m), \
+             _safe = c_list_entry(c_list_next(&_iter->_m), __typeof__(*_iter), _m); \
+             &_iter->_m != (_list); \
+             _iter = _safe, \
+             _safe = c_list_entry(c_list_next(&_safe->_m), __typeof__(*_iter), _m))
 
 /**
  * c_list_first() - return pointer to first element, or NULL if empty
@@ -298,9 +322,13 @@ static inline void c_list_splice(CList *target, CList *source) {
  *
  * Return: Pointer to first list element, or NULL if empty.
  */
-static inline CList *c_list_first(CList *list) {
-        return c_list_is_empty(list) ? NULL : list->next;
+static inline const CList *c_list_first(const CList *list) {
+        return (!list || list->next == list) ? NULL : list->next;
 }
+#define c_list_first(list) \
+        (_Generic((list), \
+                  CList *: ((CList *)c_list_first((list))), \
+                  default:           c_list_first((list))))
 
 /**
  * c_list_last() - return pointer to last element, or NULL if empty
@@ -311,9 +339,13 @@ static inline CList *c_list_first(CList *list) {
  *
  * Return: Pointer to last list element, or NULL if empty.
  */
-static inline CList *c_list_last(CList *list) {
-        return c_list_is_empty(list) ? NULL : list->prev;
+static inline const CList *c_list_last(const CList *list) {
+        return (!list || list->next == list) ? NULL : list->prev;
 }
+#define c_list_last(list) \
+        (_Generic((list), \
+                  CList *: ((CList *)c_list_last((list))), \
+                  default:           c_list_last((list))))
 
 /**
  * c_list_first_entry() - return pointer to first entry, or NULL if empty

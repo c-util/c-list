@@ -27,7 +27,7 @@ static void test_entry(void) {
 
         /* verify c_list_entry() works as expected (even with NULL) */
 
-        assert(!c_list_entry(NULL, Entry, link));
+        assert(!c_list_entry((CList *)NULL, Entry, link));
         assert(&e1 == c_list_entry(&e1.link, Entry, link));
 
         /* verify @list is empty */

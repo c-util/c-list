@@ -29,9 +29,9 @@ CHANGES WITH 3:
           returning with stale pointers. Technically, this is also an API
           break, but unlikely to affect any existing code.
 
-        Contributions from:
+        Contributions from: David Herrmann, Thomas Haller
 
-        - Tübingen, 2017-XX-XX
+        - Berlin, 2017-08-13
 
 CHANGES WITH 2:
 

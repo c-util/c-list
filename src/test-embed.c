@@ -91,7 +91,7 @@ static void test_entry(void) {
                 assert(i != 3 || e == &e4);
                 assert(i < 4);
                 ++i;
-                c_list_unlink_init(&e->link);
+                c_list_unlink(&e->link);
         }
         assert(i == 4);
 

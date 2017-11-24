@@ -50,7 +50,7 @@ static void test_iterators(void) {
         i = 0;
         c_list_for_each_safe(iter, safe, &list) {
                 assert(iter == &a || iter == &b);
-                c_list_unlink(iter);
+                c_list_unlink_stale(iter);
                 ++i;
         }
         assert(i == 2);

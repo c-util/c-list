@@ -36,7 +36,7 @@ static void test_api(void) {
         assert(c_list_contains(&list, &list));
         assert(c_list_contains(&list, &node.link));
 
-        c_list_unlink(&node.link);
+        c_list_unlink_stale(&node.link);
         assert(c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));
         assert(c_list_length(&list) == 0);
@@ -45,7 +45,7 @@ static void test_api(void) {
         assert(c_list_is_linked(&node.link));
         assert(!c_list_is_empty(&list));
 
-        c_list_unlink_init(&node.link);
+        c_list_unlink(&node.link);
         assert(!c_list_is_linked(&node.link));
         assert(c_list_is_empty(&list));
 
@@ -54,13 +54,13 @@ static void test_api(void) {
         c_list_link_front(&list, &node.link);
         assert(c_list_is_linked(&node.link));
 
-        c_list_unlink_init(&node.link);
+        c_list_unlink(&node.link);
         assert(!c_list_is_linked(&node.link));
 
         c_list_link_tail(&list, &node.link);
         assert(c_list_is_linked(&node.link));
 
-        c_list_unlink_init(&node.link);
+        c_list_unlink(&node.link);
         assert(!c_list_is_linked(&node.link));
 
         /* swap / splice list operators */

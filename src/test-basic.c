@@ -31,6 +31,20 @@ static void test_iterators(void) {
         }
         assert(i == 1);
 
+        i = 0;
+        iter = NULL;
+        c_list_for_each_continue(iter, &list) {
+                assert(iter == &a);
+                ++i;
+        }
+        assert(i == 1);
+
+        i = 0;
+        iter = &a;
+        c_list_for_each_continue(iter, &list)
+                ++i;
+        assert(i == 0);
+
         /* link @b as well and verify iterators again */
 
         c_list_link_tail(&list, &b);
@@ -45,12 +59,50 @@ static void test_iterators(void) {
         }
         assert(i == 2);
 
+        i = 0;
+        iter = NULL;
+        c_list_for_each_continue(iter, &list) {
+                assert((i == 0 && iter == &a) ||
+                       (i == 1 && iter == &b));
+                ++i;
+        }
+        assert(i == 2);
+
+        i = 0;
+        iter = &a;
+        c_list_for_each_continue(iter, &list) {
+                assert(iter == &b);
+                ++i;
+        }
+        assert(i == 1);
+
+        i = 0;
+        iter = &b;
+        c_list_for_each_continue(iter, &list)
+                ++i;
+        assert(i == 0);
+
         /* verify safe-iterator while removing elements */
 
         i = 0;
         c_list_for_each_safe(iter, safe, &list) {
                 assert(iter == &a || iter == &b);
                 c_list_unlink_stale(iter);
+                ++i;
+        }
+        assert(i == 2);
+
+        assert(c_list_is_empty(&list));
+
+        /* link both and verify *_unlink() iterators */
+
+        c_list_link_tail(&list, &a);
+        c_list_link_tail(&list, &b);
+
+        i = 0;
+        c_list_for_each_safe_unlink(iter, safe, &list) {
+                assert(iter == &a || iter == &b);
+                assert(!c_list_is_linked(iter));
                 ++i;
         }
         assert(i == 2);

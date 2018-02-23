@@ -1,11 +1,12 @@
-c-list - Circular Double Linked List Implementation in Standard ISO-C11
+c-list - Circular Intrusive Double Linked List Collection in ISO-C11
 
 ABOUT:
-        The c-list project is a standalone implementation of an intrusive
-        double linked list in Standard ISO-C11.
+        The c-list project implements an intrusive collection based on circular
+        double linked lists in ISO-C11. It aims for minimal API constraints,
+        leaving maximum control over the data-structures to the API consumer.
 
 DETAILS:
-        https://github.com/c-util/c-list/wiki
+        https://c-util.github.io/c-list
 
 BUG REPORTS:
         https://github.com/c-util/c-list/issues
@@ -19,8 +20,8 @@ GITWEB:
 
 LICENSE:
         Apache Software License 2.0
-        Lesser General Public License 2.0+
-        See LICENSE and AUTHORS for details.
+        Lesser General Public License 2.1+
+        See AUTHORS for details.
 
 REQUIREMENTS:
         The requirements for c-list are:
@@ -39,9 +40,9 @@ INSTALL:
 
             $ mkdir build
             $ cd build
-            $ meson setup . ..
+            $ meson setup ..
             $ ninja
-            $ ninja test
+            $ meson test
             # ninja install
 
         No custom configuration options are available.

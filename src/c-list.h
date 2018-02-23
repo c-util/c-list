@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * Circular Double Linked List Implementation in Standard ISO-C11
+ * Circular Intrusive Double Linked List Collection in ISO-C11
  *
  * This implements a generic circular double linked list. List entries must
  * embed the CList object, which provides pointers to the next and previous

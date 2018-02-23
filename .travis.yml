@@ -1,7 +1,11 @@
+os: linux
+dist: trusty
+language: c
+
 services:
   - docker
 
-before_install:
+install:
   - curl -O -L "https://raw.githubusercontent.com/cherry-pick/cherry-images/v1/scripts/vmrun"
   - curl -O -L "https://raw.githubusercontent.com/cherry-pick/cherry-ci/v1/scripts/cherryci"
   - chmod +x "./vmrun" "./cherryci"
@@ -12,6 +16,6 @@ jobs:
       script:
         - ./vmrun -- ../src/cherryci -d ../src/.cherryci -s c-util -m
     - script:
-        - ./vmrun -T armv7hl -- ../src/cherryci -d ../src/.cherryci -s c-util -m
+        - ./vmrun -T armv7hl -- ../src/cherryci -d ../src/.cherryci -s c-util
     - script:
-        - ./vmrun -T i686 -- ../src/cherryci -d ../src/.cherryci -s c-util -m
+        - ./vmrun -T i686 -- ../src/cherryci -d ../src/.cherryci -s c-util

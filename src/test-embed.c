@@ -103,7 +103,7 @@ static void test_entry(void) {
         assert(!c_list_is_linked(&e4.link));
 }
 
-int main(int argc, char **argv) {
+int main(void) {
         test_entry();
         return 0;
 }

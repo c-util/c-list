@@ -176,7 +176,7 @@ static void test_flush(void) {
         assert(!c_list_is_linked(&e2));
 }
 
-int main(int argc, char **argv) {
+int main(void) {
         test_iterators();
         test_swap();
         test_splice();

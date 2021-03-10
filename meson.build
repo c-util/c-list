@@ -5,6 +5,7 @@ project(
         license: 'Apache',
         default_options: [
                 'c_std=c11',
+                'warning_level=3',
         ],
 )
 project_description = 'Circular Intrusive Double Linked List Collection'

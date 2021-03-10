@@ -104,7 +104,7 @@ static void test_api(void) {
         assert(!c_list_last_entry(&list, Node, link));
 }
 
-int main(int argc, char **argv) {
+int main(void) {
         test_api();
         return 0;
 }

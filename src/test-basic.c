@@ -176,10 +176,28 @@ static void test_flush(void) {
         assert(!c_list_is_linked(&e2));
 }
 
+static void test_macros(void) {
+        /* Verify `c_list_entry()` evaluates arguments only once. */
+        {
+                struct TestList {
+                        int a;
+                        CList link;
+                        int b;
+                } list = { .link = C_LIST_INIT(list.link) };
+                CList *p[2] = { &list.link, NULL };
+                unsigned int i = 0;
+
+                assert(i == 0);
+                assert(c_list_entry(p[i++], struct TestList, link) == &list);
+                assert(i == 1);
+        }
+}
+
 int main(int argc, char **argv) {
         test_iterators();
         test_swap();
         test_splice();
         test_flush();
+        test_macros();
         return 0;
 }

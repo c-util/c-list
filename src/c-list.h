@@ -70,8 +70,19 @@ static inline void c_list_init(CList *what) {
  * Return: Pointer to parent container, or NULL.
  */
 #define c_list_entry(_what, _t, _m) \
-        ((_t *)(void *)(((unsigned long)(void *)(_what) ?: \
-                         offsetof(_t, _m)) - offsetof(_t, _m)))
+        ((_t *)_c_list_entry_eval((_what), offsetof(_t, _m)))
+
+static inline void *_c_list_entry_eval(const void *what, unsigned offset) {
+        if (what) {
+            /* We allow calling "c_list_entry()" on the list head, which is commonly
+             * a plain CList struct. The returned entry pointer is thus invalid.
+             * That is used by the c_list_for_each_entry*() macros.
+             * Gcc correctly warns about that as "-Warray-bounds". It's hard to workaround
+             * that warning, but casting the pointer to int and calculating the offset works. */
+            return (void *)(((unsigned long)what) - offset);
+        }
+        return NULL;
+}
 
 /**
  * c_list_is_linked() - check whether an entry is linked

@@ -69,7 +69,7 @@ static inline void c_list_init(CList *what) {
  *
  * Return: Pointer to parent container, or NULL.
  */
-static inline void *c_list_entry_offset(const void *what, unsigned long offset) {
+static inline void *c_list_entry_offset(const CList *what, unsigned long offset) {
         if (what) {
             /*
              * We allow calling "c_list_entry()" on the list head, which is
@@ -80,7 +80,7 @@ static inline void *c_list_entry_offset(const void *what, unsigned long offset) 
              * dereferenced, this is fine. We explicitly use integer arithmetic
              * to circumvent the Gcc warning.
              */
-            return (void *)(((unsigned long)what) - offset);
+            return (void *)(((unsigned long)(void *)what) - offset);
         }
         return NULL;
 }

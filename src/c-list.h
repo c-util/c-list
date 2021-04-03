@@ -72,14 +72,14 @@ static inline void c_list_init(CList *what) {
 #define c_list_entry(_what, _t, _m) \
         ((_t *)_c_list_entry_eval((_what), offsetof(_t, _m)))
 
-static inline void *_c_list_entry_eval(const void *what, unsigned offset) {
+static inline void *_c_list_entry_eval(const CList *what, unsigned offset) {
         if (what) {
             /* We allow calling "c_list_entry()" on the list head, which is commonly
              * a plain CList struct. The returned entry pointer is thus invalid.
              * That is used by the c_list_for_each_entry*() macros.
              * Gcc correctly warns about that as "-Warray-bounds". It's hard to workaround
              * that warning, but casting the pointer to int and calculating the offset works. */
-            return (void *)(((unsigned long)what) - offset);
+            return (void *)(((unsigned long)(void *)what) - offset);
         }
         return NULL;
 }

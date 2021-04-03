@@ -23,8 +23,10 @@ static void test_entry(void) {
         Entry e2 = { .foo = 2 * 7, .bar = 2 * 11 };
         Entry e3 = { .foo = 3 * 7, .bar = 3 * 11 };
         Entry e4 = { .foo = 4 * 7, .bar = 4 * 11 };
+#if _C_LIST_HAS_TYPEOF
         Entry *e, *safe;
         size_t i;
+#endif
 
         /* verify c_list_entry() works as expected (even with NULL) */
 
@@ -46,6 +48,7 @@ static void test_entry(void) {
         assert(c_list_last_entry(&list, Entry, link)->foo == 2 * 7);
         assert(c_list_last_entry(&list, Entry, link)->bar == 2 * 11);
 
+#if _C_LIST_HAS_TYPEOF
         i = 0;
         c_list_for_each_entry(e, &list, link) {
                 assert(i != 0 || e == &e1);
@@ -54,6 +57,7 @@ static void test_entry(void) {
                 ++i;
         }
         assert(i == 2);
+#endif
 
         /* link 2 more entries */
 
@@ -65,6 +69,7 @@ static void test_entry(void) {
         assert(c_list_last_entry(&list, Entry, link)->foo == 4 * 7);
         assert(c_list_last_entry(&list, Entry, link)->bar == 4 * 11);
 
+#if _C_LIST_HAS_TYPEOF
         i = 0;
         c_list_for_each_entry(e, &list, link) {
                 assert(i != 0 || e == &e1);
@@ -75,6 +80,7 @@ static void test_entry(void) {
                 ++i;
         }
         assert(i == 4);
+#endif
 
         assert(!c_list_is_empty(&list));
         assert(c_list_is_linked(&e1.link));
@@ -84,6 +90,7 @@ static void test_entry(void) {
 
         /* remove via safe iterator */
 
+#if _C_LIST_HAS_TYPEOF
         i = 0;
         c_list_for_each_entry_safe(e, safe, &list, link) {
                 assert(i != 0 || e == &e1);
@@ -95,6 +102,7 @@ static void test_entry(void) {
                 c_list_unlink(&e->link);
         }
         assert(i == 4);
+#endif
 
         assert(c_list_is_empty(&list));
         assert(!c_list_is_linked(&e1.link));

@@ -162,6 +162,19 @@ static void test_flush(void) {
         CList e1 = C_LIST_INIT(e1), e2 = C_LIST_INIT(e2);
 
         {
+                CList list1 = C_LIST_INIT(list1);
+
+                c_list_link_tail(&list1, &e1);
+
+                assert(c_list_is_linked(&e1));
+
+                c_list_flush(&list1);
+        }
+
+        assert(!c_list_is_linked(&e1));
+
+#if defined(__GNUC__) || defined(__clang__)
+        {
                 __attribute__((__cleanup__(c_list_flush))) CList list1 = C_LIST_INIT(list1);
                 __attribute__((__cleanup__(c_list_flush))) CList list2 = C_LIST_INIT(list2);
 
@@ -171,6 +184,7 @@ static void test_flush(void) {
                 assert(c_list_is_linked(&e1));
                 assert(c_list_is_linked(&e2));
         }
+#endif
 
         assert(!c_list_is_linked(&e1));
         assert(!c_list_is_linked(&e2));

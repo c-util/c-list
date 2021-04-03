@@ -356,7 +356,7 @@ static inline CList *c_list_last(CList *list) {
              _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
              &(_iter)->_m != (_list);                                           \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))    \
+             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
 
 #define c_list_for_each_continue(_iter, _list)                                  \
         for (_iter = (_iter) ? (_iter)->next : (_list)->next;                   \
@@ -383,7 +383,7 @@ static inline CList *c_list_last(CList *list) {
              _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
              &(_iter)->_m != (_list);                                           \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))    \
+             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
 
 #define c_list_for_each_safe_unlink(_iter, _safe, _list)                        \
         for (_iter = (_list)->next, _safe = (_iter)->next;                      \
@@ -396,7 +396,7 @@ static inline CList *c_list_last(CList *list) {
              (((_iter)->_m = (CList)C_LIST_INIT((_iter)->_m)),                  \
               &(_iter)->_m != (_list));                                         \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))    \
+             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
 
 /**
  * c_list_flush() - flush all entries from a list

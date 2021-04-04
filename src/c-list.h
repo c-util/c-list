@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct CList CList;
 
@@ -80,7 +81,7 @@ static inline void *c_list_entry_offset(const CList *what, unsigned long offset)
              * dereferenced, this is fine. We explicitly use integer arithmetic
              * to circumvent the Gcc warning.
              */
-            return (void *)(((unsigned long)(void *)what) - offset);
+            return (void *)(((uintptr_t)(void *)what) - offset);
         }
         return NULL;
 }

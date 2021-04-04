@@ -22,6 +22,7 @@ extern "C" {
 #endif
 
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct CList CList;
 
@@ -79,7 +80,7 @@ static inline void *_c_list_entry_eval(const CList *what, unsigned offset) {
              * That is used by the c_list_for_each_entry*() macros.
              * Gcc correctly warns about that as "-Warray-bounds". It's hard to workaround
              * that warning, but casting the pointer to int and calculating the offset works. */
-            return (void *)(((unsigned long)(void *)what) - offset);
+            return (void *)(((uintptr_t)(void *)what) - offset);
         }
         return NULL;
 }

@@ -56,6 +56,36 @@ static inline void c_list_init(CList *what) {
 }
 
 /**
+ * c_list_entry_offset() - get parent container of list entry
+ * @what:               list entry, or NULL
+ * @offset:             offset of the list member in its surrounding type
+ *
+ * If the list entry @what is embedded into a surrounding structure, this will
+ * turn the list entry pointer @what into a pointer to the parent container
+ * (sometimes called container_of(3)). Use the `c_list_entry()` macro for an
+ * easier API.
+ *
+ * If @what is NULL, this will also return NULL.
+ *
+ * Return: Pointer to parent container, or NULL.
+ */
+static inline void *c_list_entry_offset(const void *what, unsigned long offset) {
+        if (what) {
+            /*
+             * We allow calling "c_list_entry()" on the list head, which is
+             * commonly a plain CList struct. The returned entry pointer is
+             * thus invalid. For instance, this is used by the
+             * c_list_for_each_entry*() macros. Gcc correctly warns about that
+             * with "-Warray-bounds". However, as long as the value is never
+             * dereferenced, this is fine. We explicitly use integer arithmetic
+             * to circumvent the Gcc warning.
+             */
+            return (void *)(((unsigned long)what) - offset);
+        }
+        return NULL;
+}
+
+/**
  * c_list_entry() - get parent container of list entry
  * @_what:              list entry, or NULL
  * @_t:                 type of parent container
@@ -70,19 +100,7 @@ static inline void c_list_init(CList *what) {
  * Return: Pointer to parent container, or NULL.
  */
 #define c_list_entry(_what, _t, _m) \
-        ((_t *)_c_list_entry_eval((_what), offsetof(_t, _m)))
-
-static inline void *_c_list_entry_eval(const void *what, unsigned offset) {
-        if (what) {
-            /* We allow calling "c_list_entry()" on the list head, which is commonly
-             * a plain CList struct. The returned entry pointer is thus invalid.
-             * That is used by the c_list_for_each_entry*() macros.
-             * Gcc correctly warns about that as "-Warray-bounds". It's hard to workaround
-             * that warning, but casting the pointer to int and calculating the offset works. */
-            return (void *)(((unsigned long)what) - offset);
-        }
-        return NULL;
-}
+        ((_t *)c_list_entry_offset((_what), offsetof(_t, _m)))
 
 /**
  * c_list_is_linked() - check whether an entry is linked

@@ -160,17 +160,16 @@ static void test_splice(void) {
 
 static void test_flush(void) {
         CList e1 = C_LIST_INIT(e1), e2 = C_LIST_INIT(e2);
+        CList list1 = C_LIST_INIT(list1), list2 = C_LIST_INIT(list2);
 
-        {
-                __attribute__((__cleanup__(c_list_flush))) CList list1 = C_LIST_INIT(list1);
-                __attribute__((__cleanup__(c_list_flush))) CList list2 = C_LIST_INIT(list2);
+        c_list_link_tail(&list2, &e1);
+        c_list_link_tail(&list2, &e2);
 
-                c_list_link_tail(&list2, &e1);
-                c_list_link_tail(&list2, &e2);
+        assert(c_list_is_linked(&e1));
+        assert(c_list_is_linked(&e2));
 
-                assert(c_list_is_linked(&e1));
-                assert(c_list_is_linked(&e2));
-        }
+        c_list_flush(&list1);
+        c_list_flush(&list2);
 
         assert(!c_list_is_linked(&e1));
         assert(!c_list_is_linked(&e2));
@@ -193,11 +192,36 @@ static void test_macros(void) {
         }
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+static void test_extensions(void) {
+        CList e1 = C_LIST_INIT(e1), e2 = C_LIST_INIT(e2);
+
+        /* Test `c_list_flush()` in combination with cleanup attributes. */
+        {
+                __attribute((cleanup(c_list_flush))) CList list1 = C_LIST_INIT(list1);
+                __attribute((cleanup(c_list_flush))) CList list2 = C_LIST_INIT(list2);
+
+                c_list_link_tail(&list2, &e1);
+                c_list_link_tail(&list2, &e2);
+
+                assert(c_list_is_linked(&e1));
+                assert(c_list_is_linked(&e2));
+        }
+
+        assert(!c_list_is_linked(&e1));
+        assert(!c_list_is_linked(&e2));
+}
+#else
+static void test_extensions(void) {
+}
+#endif
+
 int main(void) {
         test_iterators();
         test_swap();
         test_splice();
         test_flush();
         test_macros();
+        test_extensions();
         return 0;
 }

@@ -70,7 +70,7 @@ static inline void c_list_init(CList *what) {
  *
  * Return: Pointer to parent container, or NULL.
  */
-static inline void *c_list_entry_offset(const CList *what, unsigned long offset) {
+static inline void *c_list_entry_offset(const CList *what, size_t offset) {
         if (what) {
             /*
              * We allow calling "c_list_entry()" on the list head, which is
@@ -432,8 +432,8 @@ static inline void c_list_flush(CList *list) {
  *
  * Return: Number of items in @list.
  */
-static inline unsigned long c_list_length(const CList *list) {
-        unsigned long n = 0;
+static inline size_t c_list_length(const CList *list) {
+        size_t n = 0;
         const CList *iter;
 
         c_list_for_each(iter, list)

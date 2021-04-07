@@ -30,5 +30,7 @@ test('API Symbol Visibility', test_api)
 test_basic = executable('test-basic', ['test-basic.c'], dependencies: libclist_dep)
 test('Basic API Behavior', test_basic)
 
-test_embed = executable('test-embed', ['test-embed.c'], dependencies: libclist_dep)
-test('Embedded List Nodes', test_embed)
+if use_gnu
+        test_embed = executable('test-embed', ['test-embed.c'], dependencies: libclist_dep)
+        test('Embedded List Nodes', test_embed)
+endif

@@ -336,20 +336,40 @@ static inline CList *c_list_last(CList *list) {
  *               state.
  */
 
+/* direct/raw iterators */
+
 #define c_list_for_each(_iter, _list)                                           \
         for (_iter = (_list)->next;                                             \
              (_iter) != (_list);                                                \
              _iter = (_iter)->next)
 
-#define c_list_for_each_entry(_iter, _list, _m)                                 \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m);       \
-             &(_iter)->_m != (_list);                                           \
-             _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
-
 #define c_list_for_each_safe(_iter, _safe, _list)                               \
         for (_iter = (_list)->next, _safe = (_iter)->next;                      \
              (_iter) != (_list);                                                \
              _iter = (_safe), _safe = (_safe)->next)
+
+#define c_list_for_each_continue(_iter, _list)                                  \
+        for (_iter = (_iter) ? (_iter)->next : (_list)->next;                   \
+             (_iter) != (_list);                                                \
+             _iter = (_iter)->next)
+
+#define c_list_for_each_safe_continue(_iter, _safe, _list)                      \
+        for (_iter = (_iter) ? (_iter)->next : (_list)->next,                   \
+             _safe = (_iter)->next;                                             \
+             (_iter) != (_list);                                                \
+             _iter = (_safe), _safe = (_safe)->next)
+
+#define c_list_for_each_safe_unlink(_iter, _safe, _list)                        \
+        for (_iter = (_list)->next, _safe = (_iter)->next;                      \
+             ((*_iter = (CList)C_LIST_INIT(*_iter)), (_iter) != (_list));       \
+             _iter = (_safe), _safe = (_safe)->next)
+
+/* c_list_entry() based iterators */
+
+#define c_list_for_each_entry(_iter, _list, _m)                                 \
+        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m);       \
+             &(_iter)->_m != (_list);                                           \
+             _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
 
 #define c_list_for_each_entry_safe(_iter, _safe, _list, _m)                     \
         for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m),       \
@@ -358,23 +378,12 @@ static inline CList *c_list_last(CList *list) {
              _iter = (_safe),                                                   \
              _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
 
-#define c_list_for_each_continue(_iter, _list)                                  \
-        for (_iter = (_iter) ? (_iter)->next : (_list)->next;                   \
-             (_iter) != (_list);                                                \
-             _iter = (_iter)->next)
-
 #define c_list_for_each_entry_continue(_iter, _list, _m)                        \
         for (_iter = c_list_entry((_iter) ? (_iter)->_m.next : (_list)->next,   \
                                   __typeof__(*_iter),                           \
                                   _m);                                          \
              &(_iter)->_m != (_list);                                           \
              _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
-
-#define c_list_for_each_safe_continue(_iter, _safe, _list)                      \
-        for (_iter = (_iter) ? (_iter)->next : (_list)->next,                   \
-             _safe = (_iter)->next;                                             \
-             (_iter) != (_list);                                                \
-             _iter = (_safe), _safe = (_safe)->next)
 
 #define c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m)            \
         for (_iter = c_list_entry((_iter) ? (_iter)->_m.next : (_list)->next,   \
@@ -384,11 +393,6 @@ static inline CList *c_list_last(CList *list) {
              &(_iter)->_m != (_list);                                           \
              _iter = (_safe),                                                   \
              _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
-
-#define c_list_for_each_safe_unlink(_iter, _safe, _list)                        \
-        for (_iter = (_list)->next, _safe = (_iter)->next;                      \
-             ((*_iter = (CList)C_LIST_INIT(*_iter)), (_iter) != (_list));       \
-             _iter = (_safe), _safe = (_safe)->next)
 
 #define c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m)              \
         for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m),       \

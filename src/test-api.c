@@ -75,26 +75,29 @@ static void test_api(void) {
         c_list_splice(&list, &list);
         assert(c_list_is_empty(&list));
 
-        /* loop macros */
+        /* direct/raw iterators */
 
         c_list_for_each(list_iter, &list)
                 assert(list_iter != &list);
-        c_list_for_each_entry(node_iter, &list, link)
-                assert(&node_iter->link != &list);
         c_list_for_each_safe(list_iter, list_safe, &list)
                 assert(list_iter != &list);
-        c_list_for_each_entry_safe(node_iter, node_safe, &list, link)
-                assert(&node_iter->link != &list);
         c_list_for_each_continue(list_iter, &list)
                 assert(list_iter != &list);
-        c_list_for_each_entry_continue(node_iter, &list, link)
-                assert(&node_iter->link != &list);
         c_list_for_each_safe_continue(list_iter, list_safe, &list)
                 assert(list_iter != &list);
-        c_list_for_each_entry_safe_continue(node_iter, node_safe, &list, link)
-                assert(&node_iter->link != &list);
         c_list_for_each_safe_unlink(list_iter, list_safe, &list)
                 assert(list_iter != &list);
+
+        /* c_list_entry() based iterators */
+
+        c_list_for_each_entry(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+        c_list_for_each_entry_safe(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+        c_list_for_each_entry_continue(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+        c_list_for_each_entry_safe_continue(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
         c_list_for_each_entry_safe_unlink(node_iter, node_safe, &list, link)
                 assert(&node_iter->link != &list);
 

@@ -18,7 +18,7 @@ typedef struct {
 
 static void test_api(void) {
         CList *list_iter, *list_safe, list = C_LIST_INIT(list);
-        Node *node_iter, *node_safe, node = { .id = 0, .link = C_LIST_INIT(node.link) };
+        Node node = { .id = 0, .link = C_LIST_INIT(node.link) };
 
         assert(!c_list_entry_offset(NULL, 0));
         assert(!c_list_entry_offset(NULL, offsetof(Node, link)));
@@ -79,27 +79,20 @@ static void test_api(void) {
 
         c_list_for_each(list_iter, &list)
                 assert(list_iter != &list);
+
         c_list_for_each_safe(list_iter, list_safe, &list)
                 assert(list_iter != &list);
+
+        list_iter = NULL;
         c_list_for_each_continue(list_iter, &list)
                 assert(list_iter != &list);
+
+        list_iter = NULL;
         c_list_for_each_safe_continue(list_iter, list_safe, &list)
                 assert(list_iter != &list);
+
         c_list_for_each_safe_unlink(list_iter, list_safe, &list)
                 assert(list_iter != &list);
-
-        /* c_list_entry() based iterators */
-
-        c_list_for_each_entry(node_iter, &list, link)
-                assert(&node_iter->link != &list);
-        c_list_for_each_entry_safe(node_iter, node_safe, &list, link)
-                assert(&node_iter->link != &list);
-        c_list_for_each_entry_continue(node_iter, &list, link)
-                assert(&node_iter->link != &list);
-        c_list_for_each_entry_safe_continue(node_iter, node_safe, &list, link)
-                assert(&node_iter->link != &list);
-        c_list_for_each_entry_safe_unlink(node_iter, node_safe, &list, link)
-                assert(&node_iter->link != &list);
 
         /* list accessors */
 
@@ -109,7 +102,37 @@ static void test_api(void) {
         assert(!c_list_last_entry(&list, Node, link));
 }
 
+#if defined(__GNUC__) || defined(__clang__)
+static void test_api_gnu(void) {
+        CList list = C_LIST_INIT(list);
+        Node *node_iter, *node_safe;
+
+        /* c_list_entry() based iterators */
+
+        c_list_for_each_entry(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+
+        c_list_for_each_entry_safe(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+
+        node_iter = NULL;
+        c_list_for_each_entry_continue(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+
+        node_iter = NULL;
+        c_list_for_each_entry_safe_continue(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+
+        c_list_for_each_entry_safe_unlink(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+}
+#else
+static void test_api_gnu(void) {
+}
+#endif
+
 int main(void) {
         test_api();
+        test_api_gnu();
         return 0;
 }

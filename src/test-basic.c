@@ -193,7 +193,7 @@ static void test_macros(void) {
 }
 
 #if defined(__GNUC__) || defined(__clang__)
-static void test_extensions(void) {
+static void test_gnu(void) {
         CList e1 = C_LIST_INIT(e1), e2 = C_LIST_INIT(e2);
 
         /* Test `c_list_flush()` in combination with cleanup attributes. */
@@ -212,7 +212,7 @@ static void test_extensions(void) {
         assert(!c_list_is_linked(&e2));
 }
 #else
-static void test_extensions(void) {
+static void test_gnu(void) {
 }
 #endif
 
@@ -222,6 +222,6 @@ int main(void) {
         test_splice();
         test_flush();
         test_macros();
-        test_extensions();
+        test_gnu();
         return 0;
 }

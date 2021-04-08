@@ -22,7 +22,10 @@ jobs:
 
   ci-msvc:
     name: CI with MSVC
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016, windows-latest]
 
     steps:
     - name: Fetch Sources

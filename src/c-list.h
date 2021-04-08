@@ -51,9 +51,12 @@ struct CList {
 /**
  * c_list_init() - initialize list entry
  * @what:               list entry to initialize
+ *
+ * Return: @what is returned.
  */
-static inline void c_list_init(CList *what) {
+static inline CList *c_list_init(CList *what) {
         *what = (CList)C_LIST_INIT(*what);
+        return what;
 }
 
 /**

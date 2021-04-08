@@ -20,6 +20,7 @@ static void test_api(void) {
         CList *list_iter, *list_safe, list = C_LIST_INIT(list);
         Node node = { .id = 0, .link = C_LIST_INIT(node.link) };
 
+        assert(c_list_init(&list) == &list);
         assert(!c_list_entry_offset(NULL, 0));
         assert(!c_list_entry_offset(NULL, offsetof(Node, link)));
         assert(!c_list_entry(NULL, Node, link));

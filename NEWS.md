@@ -4,6 +4,9 @@
 
         * The minimum required meson version is now 0.60.0.
 
+        * New function c_list_split() is added. It reverses c_list_splice()
+          and thus allows to split a list in half.
+
         * TBD
 
         Contributions from: David Rheinsberg

@@ -260,6 +260,29 @@ static inline void c_list_splice(CList *target, CList *source) {
 }
 
 /**
+ * c_list_split() - split one list in two
+ * @list:       the list to split into
+ * @where:      new starting element of newlist
+ * @newlist:    new list
+ *
+ * This split list 'list' in two list. The second start from 'where'.
+ * This function is the inverse of c_list_splice
+ *
+ * 'where' has to be included in 'list' and so where is by definition not empty
+ */
+static inline void c_list_split(CList *list, CList *where, CList *newlist) {
+    newlist->next = where;
+    newlist->prev = list->prev;
+
+    newlist->prev->next = newlist;
+    newlist->next->prev->next = list;
+
+    list->prev = newlist->next->prev;
+    newlist->next->prev = newlist;
+}
+
+
+/**
  * c_list_first() - return pointer to first element, or NULL if empty
  * @list:               list to operate on, or NULL
  *

@@ -1,6 +1,9 @@
 # c-list - Circular Intrusive Double Linked List Collection
 
 ## CHANGES WITH 3:
+        * API: add c_list_split() defined as inverse of c_list_splice()
+
+## CHANGES WITH 3:
 
         * API break: The c_list_loop_*() symbols were removed, since we saw
                      little use for them. No user was known at the time, so

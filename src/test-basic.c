@@ -158,6 +158,55 @@ static void test_splice(void) {
         assert(c_list_last(&target) == &e2);
 }
 
+static void test_split(void) {
+        CList target;
+        CList source;
+        CList newlist;
+        CList e1, e2;
+
+        // test1
+
+        c_list_init(&target);
+        c_list_init(&source);
+
+        c_list_link_tail(&source, &e1);
+
+        assert(c_list_is_empty(&target));
+        c_list_splice(&target, &source);
+        assert(c_list_first(&target) == &e1);
+        assert(c_list_last(&target) == &e1);
+        assert(c_list_is_empty(&source));
+
+        c_list_split(&target, &e1, &newlist);
+        assert(c_list_first(&newlist) == &e1);
+        assert(c_list_last(&newlist) == &e1);
+        assert(c_list_is_empty(&target));
+
+        // test2
+
+        c_list_init(&target);
+        c_list_init(&source);
+
+        c_list_link_tail(&source, &e1);
+        c_list_link_tail(&target, &e2);
+
+        assert(c_list_first(&source) == &e1);
+        assert(c_list_last(&source) == &e1);
+        assert(c_list_first(&target) == &e2);
+        assert(c_list_last(&target) == &e2);
+        c_list_splice(&target, &source);
+        assert(c_list_first(&target) == &e2);
+        assert(c_list_last(&target) == &e1);
+        assert(c_list_is_empty(&source));
+
+        c_list_split(&target, &e1, &newlist);
+        assert(c_list_first(&newlist) == &e1);
+        assert(c_list_last(&newlist) == &e1);
+        assert(c_list_first(&target) == &e2);
+        assert(c_list_last(&target) == &e2);
+}
+
+
 static void test_flush(void) {
         CList e1 = C_LIST_INIT(e1), e2 = C_LIST_INIT(e2);
         CList list1 = C_LIST_INIT(list1), list2 = C_LIST_INIT(list2);
@@ -220,6 +269,7 @@ int main(void) {
         test_iterators();
         test_swap();
         test_splice();
+        test_split();
         test_flush();
         test_macros();
         test_gnu();

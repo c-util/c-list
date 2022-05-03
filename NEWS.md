@@ -1,5 +1,15 @@
 # c-list - Circular Intrusive Double Linked List Collection
 
+## CHANGES WITH 4:
+
+        * The minimum required meson version is now 0.60.0.
+
+        * TBD
+
+        Contributions from: David Rheinsberg
+
+        - TBD, YYYY-MM-DD
+
 ## CHANGES WITH 3:
 
         * API break: The c_list_loop_*() symbols were removed, since we saw

@@ -123,6 +123,106 @@ static void test_iterators(void) {
         assert(c_list_is_empty(&list));
 }
 
+static void test_iterators_reverse(void) {
+        CList *iter, *safe, a, b, list = C_LIST_INIT(list);
+        unsigned int i;
+
+        assert(!c_list_first(&list));
+        assert(!c_list_last(&list));
+
+        /* link @a and verify iterators see just it */
+
+        c_list_link_tail(&list, &a);
+        assert(c_list_is_linked(&a));
+        assert(c_list_first(&list) == &a);
+        assert(c_list_last(&list) == &a);
+
+        i = 0;
+        c_list_for_each_reverse(iter, &list) {
+                assert(iter == &a);
+                ++i;
+        }
+        assert(i == 1);
+
+        i = 0;
+        iter = NULL;
+        c_list_for_each_continue_reverse(iter, &list) {
+                assert(iter == &a);
+                ++i;
+        }
+        assert(i == 1);
+
+        i = 0;
+        iter = &a;
+        c_list_for_each_continue_reverse(iter, &list)
+                ++i;
+        assert(i == 0);
+
+        /* link @b as well and verify iterators again */
+
+        c_list_link_tail(&list, &b);
+        assert(c_list_is_linked(&a));
+        assert(c_list_is_linked(&b));
+
+        i = 0;
+        c_list_for_each_reverse(iter, &list) {
+                assert((i == 0 && iter == &b) ||
+                       (i == 1 && iter == &a));
+                ++i;
+        }
+        assert(i == 2);
+
+        i = 0;
+        iter = NULL;
+        c_list_for_each_continue_reverse(iter, &list) {
+                assert((i == 0 && iter == &b) ||
+                       (i == 1 && iter == &a));
+                ++i;
+        }
+        assert(i == 2);
+
+        i = 0;
+        iter = &b;
+        c_list_for_each_continue_reverse(iter, &list) {
+                assert(iter == &a);
+                ++i;
+        }
+        assert(i == 1);
+
+        i = 0;
+        iter = &a;
+        c_list_for_each_continue_reverse(iter, &list)
+                ++i;
+        assert(i == 0);
+
+        /* verify safe-iterator while removing elements */
+
+        i = 0;
+        c_list_for_each_safe_reverse(iter, safe, &list) {
+                assert(iter == &a || iter == &b);
+                c_list_unlink_stale(iter);
+                ++i;
+        }
+        assert(i == 2);
+
+        assert(c_list_is_empty(&list));
+
+        /* link both and verify *_unlink() iterators */
+
+        c_list_link_tail(&list, &a);
+        c_list_link_tail(&list, &b);
+
+        i = 0;
+        c_list_for_each_safe_unlink_reverse(iter, safe, &list) {
+                assert(iter == &a || iter == &b);
+                assert(!c_list_is_linked(iter));
+                ++i;
+        }
+        assert(i == 2);
+
+        assert(c_list_is_empty(&list));
+}
+
 static void test_swap(void) {
         CList list1 = (CList)C_LIST_INIT(list1);
         CList list2 = (CList)C_LIST_INIT(list2);
@@ -309,6 +409,7 @@ static void test_gnu(void) {
 
 int main(void) {
         test_iterators();
+        test_iterators_reverse();
         test_swap();
         test_splice();
         test_split();

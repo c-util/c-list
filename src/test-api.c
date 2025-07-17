@@ -86,7 +86,13 @@ static void test_api(void) {
         c_list_for_each(list_iter, &list)
                 assert(list_iter != &list);
 
+        c_list_for_each_reverse(list_iter, &list)
+                assert(list_iter != &list);
+
         c_list_for_each_safe(list_iter, list_safe, &list)
+                assert(list_iter != &list);
+
+        c_list_for_each_safe_reverse(list_iter, list_safe, &list)
                 assert(list_iter != &list);
 
         list_iter = NULL;
@@ -94,10 +100,21 @@ static void test_api(void) {
                 assert(list_iter != &list);
 
         list_iter = NULL;
+        c_list_for_each_continue_reverse(list_iter, &list)
+                assert(list_iter != &list);
+
+        list_iter = NULL;
         c_list_for_each_safe_continue(list_iter, list_safe, &list)
                 assert(list_iter != &list);
 
+        list_iter = NULL;
+        c_list_for_each_safe_continue_reverse(list_iter, list_safe, &list)
+                assert(list_iter != &list);
+
         c_list_for_each_safe_unlink(list_iter, list_safe, &list)
+                assert(list_iter != &list);
+
+        c_list_for_each_safe_unlink_reverse(list_iter, list_safe, &list)
                 assert(list_iter != &list);
 
         /* list accessors */
@@ -132,13 +149,41 @@ static void test_api_gnu(void) {
         c_list_for_each_entry_safe_unlink(node_iter, node_safe, &list, link)
                 assert(&node_iter->link != &list);
 }
+
+static void test_api_gnu_reverse(void) {
+        CList list = C_LIST_INIT(list);
+        Node *node_iter, *node_safe;
+
+        /* c_list_entry() based iterators */
+
+        c_list_for_each_entry_reverse(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+
+        c_list_for_each_entry_safe_reverse(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+
+        node_iter = NULL;
+        c_list_for_each_entry_continue_reverse(node_iter, &list, link)
+                assert(&node_iter->link != &list);
+
+        node_iter = NULL;
+        c_list_for_each_entry_safe_continue_reverse(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+
+        c_list_for_each_entry_safe_unlink_reverse(node_iter, node_safe, &list, link)
+                assert(&node_iter->link != &list);
+}
 #else
 static void test_api_gnu(void) {
+}
+
+static void test_api_gnu_reverse(void) {
 }
 #endif
 
 int main(void) {
         test_api();
         test_api_gnu();
+        test_api_gnu_reverse();
         return 0;
 }

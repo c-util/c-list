@@ -362,72 +362,136 @@ static inline CList *c_list_last(CList *list) {
  *               it assumes the entire list will be unlinked. You must not
  *               break out of the loop, or the list will be in an inconsistent
  *               state.
+ *
+ *   - "reverse": The list is iterated in reverse order.
+ *
+ * Note: macros starting with "__" are not meant to be used directly.
  */
 
 /* direct/raw iterators */
 
-#define c_list_for_each(_iter, _list)                                           \
-        for (_iter = (_list)->next;                                             \
+#define __c_list_for_each(_iter, _list, _dir)                                   \
+        for (_iter = (_list)->_dir;                                             \
              (_iter) != (_list);                                                \
-             _iter = (_iter)->next)
+             _iter = (_iter)->_dir)
+
+#define __c_list_for_each_safe(_iter, _safe, _list, _dir)                       \
+        for (_iter = (_list)->_dir, _safe = (_iter)->_dir;                      \
+             (_iter) != (_list);                                                \
+             _iter = (_safe), _safe = (_safe)->_dir)
+
+#define __c_list_for_each_continue(_iter, _list, _dir)                          \
+        for (_iter = (_iter) ? (_iter)->_dir : (_list)->_dir;                   \
+             (_iter) != (_list);                                                \
+             _iter = (_iter)->_dir)
+
+#define __c_list_for_each_safe_continue(_iter, _safe, _list, _dir)              \
+        for (_iter = (_iter) ? (_iter)->_dir : (_list)->_dir,                   \
+             _safe = (_iter)->_dir;                                             \
+             (_iter) != (_list);                                                \
+             _iter = (_safe), _safe = (_safe)->_dir)
+
+#define __c_list_for_each_safe_unlink(_iter, _safe, _list, _dir)                \
+        for (_iter = (_list)->_dir, _safe = (_iter)->_dir;                      \
+             c_list_init(_iter) != (_list);                                     \
+             _iter = (_safe), _safe = (_safe)->_dir)
+
+#define c_list_for_each(_iter, _list)                                           \
+        __c_list_for_each(_iter, _list, next)
+
+#define c_list_for_each_reverse(_iter, _list)                                   \
+        __c_list_for_each(_iter, _list, prev)
 
 #define c_list_for_each_safe(_iter, _safe, _list)                               \
-        for (_iter = (_list)->next, _safe = (_iter)->next;                      \
-             (_iter) != (_list);                                                \
-             _iter = (_safe), _safe = (_safe)->next)
+        __c_list_for_each_safe(_iter, _safe, _list, next)
+
+#define c_list_for_each_safe_reverse(_iter, _safe, _list)                       \
+        __c_list_for_each_safe(_iter, _safe, _list, prev)
 
 #define c_list_for_each_continue(_iter, _list)                                  \
-        for (_iter = (_iter) ? (_iter)->next : (_list)->next;                   \
-             (_iter) != (_list);                                                \
-             _iter = (_iter)->next)
+        __c_list_for_each_continue(_iter, _list, next)
+
+#define c_list_for_each_continue_reverse(_iter, _list)                          \
+        __c_list_for_each_continue(_iter, _list, prev)
 
 #define c_list_for_each_safe_continue(_iter, _safe, _list)                      \
-        for (_iter = (_iter) ? (_iter)->next : (_list)->next,                   \
-             _safe = (_iter)->next;                                             \
-             (_iter) != (_list);                                                \
-             _iter = (_safe), _safe = (_safe)->next)
+        __c_list_for_each_safe_continue(_iter, _safe, _list, next)
+
+#define c_list_for_each_safe_continue_reverse(_iter, _safe, _list)              \
+        __c_list_for_each_safe_continue(_iter, _safe, _list, prev)
 
 #define c_list_for_each_safe_unlink(_iter, _safe, _list)                        \
-        for (_iter = (_list)->next, _safe = (_iter)->next;                      \
-             c_list_init(_iter) != (_list);                                     \
-             _iter = (_safe), _safe = (_safe)->next)
+        __c_list_for_each_safe_unlink(_iter, _safe, _list, next)
+
+#define c_list_for_each_safe_unlink_reverse(_iter, _safe, _list)                \
+        __c_list_for_each_safe_unlink(_iter, _safe, _list, prev)
 
 /* c_list_entry() based iterators */
 
-#define c_list_for_each_entry(_iter, _list, _m)                                 \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m);       \
+#define __c_list_for_each_entry(_iter, _list, _m, _dir)                         \
+        for (_iter = c_list_entry((_list)->_dir, __typeof__(*_iter), _m);       \
              &(_iter)->_m != (_list);                                           \
-             _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
+             _iter = c_list_entry((_iter)->_m._dir, __typeof__(*_iter), _m))
 
-#define c_list_for_each_entry_safe(_iter, _safe, _list, _m)                     \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m),       \
-             _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
+#define __c_list_for_each_entry_safe(_iter, _safe, _list, _m, _dir)             \
+        for (_iter = c_list_entry((_list)->_dir, __typeof__(*_iter), _m),       \
+             _safe = c_list_entry((_iter)->_m._dir, __typeof__(*_iter), _m);    \
              &(_iter)->_m != (_list);                                           \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
+             _safe = c_list_entry((_safe)->_m._dir, __typeof__(*_iter), _m))
 
-#define c_list_for_each_entry_continue(_iter, _list, _m)                        \
-        for (_iter = c_list_entry((_iter) ? (_iter)->_m.next : (_list)->next,   \
+#define __c_list_for_each_entry_continue(_iter, _list, _m, _dir)                \
+        for (_iter = c_list_entry((_iter) ? (_iter)->_m._dir : (_list)->_dir,   \
                                   __typeof__(*_iter),                           \
                                   _m);                                          \
              &(_iter)->_m != (_list);                                           \
-             _iter = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m))
+             _iter = c_list_entry((_iter)->_m._dir, __typeof__(*_iter), _m))
 
-#define c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m)            \
-        for (_iter = c_list_entry((_iter) ? (_iter)->_m.next : (_list)->next,   \
+#define __c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m, _dir)    \
+        for (_iter = c_list_entry((_iter) ? (_iter)->_m._dir : (_list)->_dir,   \
                                   __typeof__(*_iter),                           \
                                   _m),                                          \
-             _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
+             _safe = c_list_entry((_iter)->_m._dir, __typeof__(*_iter), _m);    \
              &(_iter)->_m != (_list);                                           \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
+             _safe = c_list_entry((_safe)->_m._dir, __typeof__(*_iter), _m))
 
-#define c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m)              \
-        for (_iter = c_list_entry((_list)->next, __typeof__(*_iter), _m),       \
-             _safe = c_list_entry((_iter)->_m.next, __typeof__(*_iter), _m);    \
+#define __c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m, _dir)      \
+        for (_iter = c_list_entry((_list)->_dir, __typeof__(*_iter), _m),       \
+             _safe = c_list_entry((_iter)->_m._dir, __typeof__(*_iter), _m);    \
              c_list_init(&(_iter)->_m) != (_list);                              \
              _iter = (_safe),                                                   \
-             _safe = c_list_entry((_safe)->_m.next, __typeof__(*_iter), _m))
+             _safe = c_list_entry((_safe)->_m._dir, __typeof__(*_iter), _m))
+
+#define c_list_for_each_entry(_iter, _list, _m)                                 \
+        __c_list_for_each_entry(_iter, _list, _m, next)
+
+#define c_list_for_each_entry_reverse(_iter, _list, _m)                         \
+        __c_list_for_each_entry(_iter, _list, _m, prev)
+
+#define c_list_for_each_entry_safe(_iter, _safe, _list, _m)                     \
+        __c_list_for_each_entry_safe(_iter, _safe, _list, _m, next)
+
+#define c_list_for_each_entry_safe_reverse(_iter, _safe, _list, _m)             \
+        __c_list_for_each_entry_safe(_iter, _safe, _list, _m, prev)
+
+#define c_list_for_each_entry_continue(_iter, _list, _m)                        \
+        __c_list_for_each_entry_continue(_iter, _list, _m, next)
+
+#define c_list_for_each_entry_continue_reverse(_iter, _list, _m)                \
+        __c_list_for_each_entry_continue(_iter, _list, _m, prev)
+
+#define c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m)            \
+        __c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m, next)
+
+#define c_list_for_each_entry_safe_continue_reverse(_iter, _safe, _list, _m)    \
+        __c_list_for_each_entry_safe_continue(_iter, _safe, _list, _m, prev)
+
+#define c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m)              \
+        __c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m, next)
+
+#define c_list_for_each_entry_safe_unlink_reverse(_iter, _safe, _list, _m)      \
+        __c_list_for_each_entry_safe_unlink(_iter, _safe, _list, _m, prev)
 
 /**
  * c_list_flush() - flush all entries from a list

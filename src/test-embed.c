@@ -57,6 +57,17 @@ static void test_entry(void) {
         }
         assert(i == 2);
 
+        i = 0;
+        c_list_for_each_reverse(iter, &list) {
+                e = c_list_entry(iter, Entry, link);
+                assert(i != 0 || e == &e2);
+                assert(i != 1 || e == &e1);
+                assert(i < 2);
+                ++i;
+        }
+        assert(i == 2);
+
+
         /* link 2 more entries */
 
         c_list_link_tail(&list, &e3.link);
@@ -79,6 +90,18 @@ static void test_entry(void) {
         }
         assert(i == 4);
 
+        i = 0;
+        c_list_for_each_reverse(iter, &list) {
+                e = c_list_entry(iter, Entry, link);
+                assert(i != 0 || e == &e4);
+                assert(i != 1 || e == &e3);
+                assert(i != 2 || e == &e2);
+                assert(i != 3 || e == &e1);
+                assert(i < 4);
+                ++i;
+        }
+        assert(i == 4);
+
         assert(!c_list_is_empty(&list));
         assert(c_list_is_linked(&e1.link));
         assert(c_list_is_linked(&e2.link));
@@ -94,6 +117,38 @@ static void test_entry(void) {
                 assert(i != 1 || e == &e2);
                 assert(i != 2 || e == &e3);
                 assert(i != 3 || e == &e4);
+                assert(i < 4);
+                ++i;
+                c_list_unlink(&e->link);
+        }
+        assert(i == 4);
+
+        assert(c_list_is_empty(&list));
+        assert(!c_list_is_linked(&e1.link));
+        assert(!c_list_is_linked(&e2.link));
+        assert(!c_list_is_linked(&e3.link));
+        assert(!c_list_is_linked(&e4.link));
+
+        /* remove via safe iterator in reverse */
+
+        c_list_link_tail(&list, &e1.link);
+        c_list_link_tail(&list, &e2.link);
+        c_list_link_tail(&list, &e3.link);
+        c_list_link_tail(&list, &e4.link);
+
+        assert(!c_list_is_empty(&list));
+        assert(c_list_is_linked(&e1.link));
+        assert(c_list_is_linked(&e2.link));
+        assert(c_list_is_linked(&e3.link));
+        assert(c_list_is_linked(&e4.link));
+
+        i = 0;
+        c_list_for_each_safe_reverse(iter, safe, &list) {
+                e = c_list_entry(iter, Entry, link);
+                assert(i != 0 || e == &e4);
+                assert(i != 1 || e == &e3);
+                assert(i != 2 || e == &e2);
+                assert(i != 3 || e == &e1);
                 assert(i < 4);
                 ++i;
                 c_list_unlink(&e->link);
@@ -135,6 +190,17 @@ static void test_entry_gnu(void) {
         }
         assert(i == 4);
 
+        i = 0;
+        c_list_for_each_entry_reverse(e, &list, link) {
+                assert(i != 0 || e == &e4);
+                assert(i != 1 || e == &e3);
+                assert(i != 2 || e == &e2);
+                assert(i != 3 || e == &e1);
+                assert(i < 4);
+                ++i;
+        }
+        assert(i == 4);
+
         assert(!c_list_is_empty(&list));
         assert(c_list_is_linked(&e1.link));
         assert(c_list_is_linked(&e2.link));
@@ -149,6 +215,37 @@ static void test_entry_gnu(void) {
                 assert(i != 1 || e == &e2);
                 assert(i != 2 || e == &e3);
                 assert(i != 3 || e == &e4);
+                assert(i < 4);
+                ++i;
+                c_list_unlink(&e->link);
+        }
+        assert(i == 4);
+
+        assert(c_list_is_empty(&list));
+        assert(!c_list_is_linked(&e1.link));
+        assert(!c_list_is_linked(&e2.link));
+        assert(!c_list_is_linked(&e3.link));
+        assert(!c_list_is_linked(&e4.link));
+
+        /* remove via safe iterator in reverse */
+
+        c_list_link_tail(&list, &e1.link);
+        c_list_link_tail(&list, &e2.link);
+        c_list_link_tail(&list, &e3.link);
+        c_list_link_tail(&list, &e4.link);
+
+        assert(!c_list_is_empty(&list));
+        assert(c_list_is_linked(&e1.link));
+        assert(c_list_is_linked(&e2.link));
+        assert(c_list_is_linked(&e3.link));
+        assert(c_list_is_linked(&e4.link));
+
+        i = 0;
+        c_list_for_each_entry_safe_reverse(e, safe, &list, link) {
+                assert(i != 0 || e == &e4);
+                assert(i != 1 || e == &e3);
+                assert(i != 2 || e == &e2);
+                assert(i != 3 || e == &e1);
                 assert(i < 4);
                 ++i;
                 c_list_unlink(&e->link);
